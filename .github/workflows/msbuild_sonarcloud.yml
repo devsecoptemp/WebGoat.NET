@@ -1,4 +1,4 @@
-name: MSBuild & SonarCloud Code Scanning 
+name: MSBuild with SonarCloud Code Scan
 on:
   push:
     branches:
@@ -44,14 +44,15 @@ jobs:
         uses: nuget/setup-nuget@v1
         
       - name: Restore NuGet Packages build
-        run: nuget restore WebGoat.NET.sln        
-          
+        run: nuget restore WebGoat.NET.sln   
+
+
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner  begin /k:"sq_webgoat_dotnet"/o:"devsecoptemp" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"sq_webgoat_dotnet" /o:"devsecoptemp" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           msbuild /p:OutpuPath=.\bin WebGoat.NET.sln
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
